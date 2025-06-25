@@ -6,18 +6,16 @@ import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 
 function App() {
+  const storedTodos = JSON.parse(localStorage.getItem('todos'))
+
   const [todo, setTodo] = useState("")
-  const [todos, setTodos] = useState([])
-  const [showFinished, setShowFinished] = useState(true)
+  const [todos, setTodos] = useState(storedTodos)
+  const [showFinished, setShowFinished] = useState(false)
 
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
+    localStorage.setItem('todos', JSON.stringify(todos))    
   }, [todos]);
-
-
-  const saveToLS = () => {
-    localStorage.setItem("todos", JSON.stringify(todos))
-  }
+  
 
   const handleAdd = () => {
     setTodos([...todos, { id: uuidv4(), todo, isCompleted: false }])
@@ -36,7 +34,6 @@ function App() {
   const handleDelete = (e, id) => {
     let newTodos = todos.filter(item => item.id !== id);
     setTodos(newTodos);
-    localStorage.setItem("todos", JSON.stringify(newTodos));
   };
 
 
