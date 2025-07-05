@@ -6,19 +6,23 @@ import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 
 function App() {
-  const storedTodos = JSON.parse(localStorage.getItem('todos'))
 
   const [todo, setTodo] = useState("")
-  const [todos, setTodos] = useState(storedTodos)
+  const [todos, setTodos] = useState([])
   const [showFinished, setShowFinished] = useState(false)
 
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos))    
-  }, [todos]);
-  
+    let todoString = localStorage.getItem("todos")
+    if(todoString){
+      let todos = JSON.parse(localStorage.getItem("todos")) 
+      setTodos(todos)
+    }
+  }, [])
+    
 
   const handleAdd = () => {
     setTodos([...todos, { id: uuidv4(), todo, isCompleted: false }])
+    localStorage.setItem("todos", JSON.stringify([...todos, { id: uuidv4(), todo, isCompleted: false }]))
     setTodo("")
   }
   const handleEdit = (e, id) => {
@@ -34,6 +38,7 @@ function App() {
   const handleDelete = (e, id) => {
     let newTodos = todos.filter(item => item.id !== id);
     setTodos(newTodos);
+    localStorage.setItem("todos", JSON.stringify(newTodos))
   };
 
 
@@ -55,6 +60,7 @@ function App() {
     let newTodos = [...todos]
     newTodos[index].isCompleted = !newTodos[index].isCompleted
     setTodos(newTodos)
+    localStorage.setItem("todos", JSON.stringify(newTodos))
   }
   return (
     <>
@@ -69,15 +75,15 @@ function App() {
         <input id='' onChange={toggleFinish} className='ml-5 my-5 mr-2 accent-[#F7C5CC]' type="checkbox" checked={showFinished} />
         <label className='font-bold' htmlFor="show">Show Finished</label>
         <h2 className='mx-5 my-2 text-lg font-bold'>Your Tasks</h2>
-        <p className={todos.length == 0 ? "No Todos to show" : ""}></p>
-        {todos.map(todo => {
-          return (showFinished || !todo.isCompleted) && <div key={todo.id} className='flex'>
-            <input id='' name={todo.id} onChange={handleCheckbox} className='ml-5 accent-[#F7C5CC]' type="checkbox" checked={todo.isCompleted} />
+        {todos.length === 0 && <p className='ml-5 font-bold'>No Todos to show!</p>}
+        {todos.map(item => {
+          return (showFinished || !item.isCompleted) && <div key={item.id} className='flex'>
+            <input id='todo' name={item.id} onChange={handleCheckbox} className='ml-5 accent-[#F7C5CC]' type="checkbox" checked={item.isCompleted} />
             <div className="task flex justify-between m-2 w-full">
-              <p className={todo.isCompleted ? "line-through" : todo.todo}>{todo.todo}</p>
+              <p className={item.isCompleted ? "line-through" : item.todo}>{item.todo}</p>
               <div className="buttons flex gap-3">
-                <button onClick={(e) => handleEdit(e, todo.id)} className='text-[#CC313D] bg-[#FFFFFF] hover:bg-[#F7C5CC] cursor-pointer rounded-full w-10 font-bold flex justify-center items-center'><FaEdit /></button>
-                <button onClick={(e) => handleDelete(e, todo.id)} className='text-[#CC313D] bg-[#FFFFFF] hover:bg-[#F7C5CC] cursor-pointer rounded-full w-10 font-bold flex justify-center items-center'><RiDeleteBin6Fill /></button>
+                <button onClick={(e) => handleEdit(e, item.id)} className='text-[#CC313D] bg-[#FFFFFF] hover:bg-[#F7C5CC] cursor-pointer rounded-full w-10 font-bold flex justify-center items-center'><FaEdit /></button>
+                <button onClick={(e) => handleDelete(e, item.id)} className='text-[#CC313D] bg-[#FFFFFF] hover:bg-[#F7C5CC] cursor-pointer rounded-full w-10 font-bold flex justify-center items-center'><RiDeleteBin6Fill /></button>
               </div>
             </div>
 
